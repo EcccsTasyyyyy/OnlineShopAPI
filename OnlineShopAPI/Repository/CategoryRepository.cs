@@ -1,4 +1,5 @@
-﻿using OnlineShopAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineShopAPI.Data;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 
@@ -13,28 +14,86 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
-    public Task AddAsync(CategoryModel entity)
+    public async Task AddAsync(CategoryModel entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Can`t add Category", ex.Message);
+        }
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if(category == null)
+            {
+                throw new ArgumentException($"Can't find Category by ID: {id}");
+            }
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            throw new ArgumentException("unexpected error, Category can`t be deleted", ex.Message);
+        }
     }
 
-    public Task<IEnumerable<CategoryModel>> GetAllAsync()
+    public async Task<IEnumerable<CategoryModel>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Categories.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Error while retrieving data", ex.Message);
+        }
     }
 
-    public Task<CategoryModel> GetByIdAsync(int id)
+    public async Task<CategoryModel> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _context.Categories.FindAsync(id);
+
+            if (result == null)
+            {
+                throw new ArgumentException($"Can`t find Category by ID: {id}");
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Unexpected error while retrieving data", ex.Message);
+        }
     }
 
-    public Task UpdateAsync(CategoryModel entity)
+    public async Task UpdateAsync(CategoryModel entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == entity.Id);
+
+            if(category == null )
+            {
+                throw new ArgumentException($"Cant`t find Category by ID: {entity.Id}");
+            }
+
+            category.CategoryName = entity.CategoryName; ;
+
+            await _context.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            throw new ArgumentException($"Can`t update database",ex.Message);
+        }
     }
 }

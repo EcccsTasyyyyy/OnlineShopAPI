@@ -3,97 +3,91 @@ using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 using OnlineShopAPI.Repository;
 
-namespace OnlineShopAPI.Controllers
+namespace OnlineShopAPI.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class UserController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    private readonly IUserRepository _userRepository;
+
+    public UserController(IUserRepository userRepository)
     {
-        private readonly IUserRepository _userRepository;
+        _userRepository = userRepository;
+    }
 
-        public UserController(IUserRepository userRepository)
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        try
         {
-            _userRepository = userRepository;
+            var result = await _userRepository.GetAllAsync();
+            return Ok(result);
         }
-
-        [HttpGet("user")]
-        public async Task<IActionResult> GetAllUsers()
+        catch (Exception ex)
         {
-            try
-            {
-                var result = await _userRepository.GetAllAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
+    }
 
-        [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetUserById(int id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(int id)
+    {
+        try
         {
-            try
-            {
-                var result = await _userRepository.GetByIdAsync(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            var result = await _userRepository.GetByIdAsync(id);
+            return Ok(result);
         }
-
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromBody] UserModel user)
+        catch (Exception ex)
         {
-            try
-            {
-                user = new UserModel()
-                {
-                    UserName = user.UserName,
-                    Password = user.Password,
-                };
-                await _userRepository.AddAsync(user);
-                return Ok("User created successfully");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
+    }
 
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(UserModel user)
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateUser([FromBody] UserModel user)
+    {
+        try
         {
-            try
+            user = new UserModel()
             {
-                user = new UserModel()
-                {
-                    UserName = user.UserName,
-                    Password = user.Password,
-                };
-                await _userRepository.UpdateAsync(user);
-                return Ok("User updated successfully");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+                UserName = user.UserName,
+                Password = user.Password,
+            };
+            await _userRepository.AddAsync(user);
+            return Ok("User created successfully");
         }
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        catch (Exception ex)
         {
-            try
-            {
-                await _userRepository.DeleteAsync(id);
-                return Ok("User deleted successfully");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUser(UserModel user)
+    {
+        try
+        {
+            await _userRepository.UpdateAsync(user);
+            return Ok("User updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        try
+        {
+            await _userRepository.DeleteAsync(id);
+            return Ok("User deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 }

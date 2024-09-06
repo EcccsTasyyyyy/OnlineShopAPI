@@ -36,7 +36,7 @@ public class UserRepository : IUserRepository
                 throw new ArgumentException($"Can`t find user by ID: {id}");
             }
 
-            _context.Users.Remove(user); // აქ await არ დამაწერინა, მეჩხუბა
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -61,11 +61,16 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            return await _context.Users.FindAsync(id); // ამას რავუყო რო ნალი არ იყოს?
+            var result = await _context.Users.FindAsync(id);
+            if(result == null)
+            {
+                throw new ArgumentException($"Can`t find user by ID: {id}");
+            }
+            return result;
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Can`t find user by ID: {id}", ex.Message);
+            throw new ArgumentException("Unexpected error while retrieving data", ex.Message);
         }
     }
 
@@ -77,7 +82,7 @@ public class UserRepository : IUserRepository
 
             if (user == null)
             {
-                throw new ArgumentException($"Can't find user with ID: {entity.Id}");
+                throw new ArgumentException($"Can't find User by ID: {entity.Id}");
             }
 
             user.UserName = entity.UserName;
