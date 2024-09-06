@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using OnlineShopAPI.Data;
+using OnlineShopAPI.IRepository;
+using OnlineShopAPI.Repository;
 
 namespace OnlineShopAPI
 {
@@ -13,6 +17,11 @@ namespace OnlineShopAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<MyDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopAPIConnectionString")));
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 

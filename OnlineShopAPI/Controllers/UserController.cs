@@ -9,9 +9,9 @@ namespace OnlineShopAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(UserRepository userRepository)
+        public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
