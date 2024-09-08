@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 
@@ -9,19 +8,19 @@ namespace OnlineShopAPI.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CategoryController(ICategoryRepository categoryRepository)
+    public CategoryController(IUnitOfWork unitOfWork)
     {
-        _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    [HttpGet("categorys")]
+    [HttpGet("categories")]
     public async Task<IActionResult> GetAllCategories()
     {
         try
         {
-            var result = await _categoryRepository.GetAllAsync();
+            var result = await _unitOfWork.Categories.GetAllAsync();
             return Ok(result);
         }
         catch (Exception ex)
@@ -35,7 +34,7 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            var result = await _categoryRepository.GetByIdAsync(id);
+            var result = await _unitOfWork.Categories.GetByIdAsync(id);
             return Ok(result);
         }
         catch(Exception ex)
@@ -54,7 +53,8 @@ public class CategoryController : ControllerBase
                 CategoryName = category.CategoryName
             };
 
-            await _categoryRepository.AddAsync(category);
+            await _unitOfWork.Categories.AddAsync(category);
+            await _unitOfWork.SaveChangesAsync();
             return Ok($"Category created successfully: {category}");
         }
         catch(Exception ex )
@@ -68,7 +68,8 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            await _categoryRepository.UpdateAsync(category);
+            await _unitOfWork.Categories.UpdateAsync(category);
+            await _unitOfWork.SaveChangesAsync();
             return Ok($"Category updated successfully");
         }
         catch(Exception ex)
@@ -82,7 +83,8 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            await _categoryRepository.DeleteAsync(id);
+            await _unitOfWork.Categories.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
             return Ok("Category deleted successfully");
         }
         catch(Exception ex)

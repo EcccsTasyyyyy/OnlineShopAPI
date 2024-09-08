@@ -18,7 +18,6 @@ public class UserRepository : IUserRepository
         try
         {
             await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -37,7 +36,6 @@ public class UserRepository : IUserRepository
             }
 
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -89,7 +87,6 @@ public class UserRepository : IUserRepository
             user.Password = entity.Password;
 
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

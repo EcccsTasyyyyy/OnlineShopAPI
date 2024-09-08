@@ -19,7 +19,6 @@ public class CategoryRepository : ICategoryRepository
         try
         {
             await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -38,7 +37,6 @@ public class CategoryRepository : ICategoryRepository
             }
 
             _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
         }
         catch(Exception ex)
         {
@@ -88,8 +86,6 @@ public class CategoryRepository : ICategoryRepository
             }
 
             category.CategoryName = entity.CategoryName; ;
-
-            await _context.SaveChangesAsync();
         }
         catch(Exception ex)
         {

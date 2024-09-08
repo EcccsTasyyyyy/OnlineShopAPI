@@ -9,11 +9,11 @@ namespace OnlineShopAPI.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IUnitOfWork unitOfWork)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet("users")]
@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var result = await _userRepository.GetAllAsync();
+            var result = await _unitOfWork.Users.GetAllAsync();
             return Ok(result);
         }
         catch (Exception ex)
@@ -35,7 +35,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var result = await _userRepository.GetByIdAsync(id);
+            var result = await _unitOfWork.Users.GetByIdAsync(id);
             return Ok(result);
         }
         catch (Exception ex)
@@ -54,7 +54,8 @@ public class UserController : ControllerBase
                 UserName = user.UserName,
                 Password = user.Password,
             };
-            await _userRepository.AddAsync(user);
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
             return Ok("User created successfully");
         }
         catch (Exception ex)
@@ -68,7 +69,8 @@ public class UserController : ControllerBase
     {
         try
         {
-            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
             return Ok("User updated successfully");
         }
         catch (Exception ex)
@@ -82,7 +84,8 @@ public class UserController : ControllerBase
     {
         try
         {
-            await _userRepository.DeleteAsync(id);
+            await _unitOfWork.Users.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
             return Ok("User deleted successfully");
         }
         catch (Exception ex)

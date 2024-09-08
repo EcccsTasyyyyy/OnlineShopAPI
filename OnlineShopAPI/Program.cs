@@ -21,8 +21,7 @@ public class Program
         builder.Services.AddDbContext<MyDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopAPIConnectionString")));
 
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         var app = builder.Build();
 
