@@ -16,35 +16,31 @@ public class UnitOfWork : IUnitOfWork
         _dbContext = dbContext;
     }
 
-     //null-coalescing assignment operator. if the value on the left side is null it assigns the value from the right side.
-     //if the left is not null, no assignment happens
-    public IUserRepository Users => _userRepository ??= new UserRepository(_dbContext);
-    public ICategoryRepository Categories => _categoryRepository ??= new CategoryRepository(_dbContext);
-    public IProductRepository Products => _productRepository ??= new ProductRepository(_dbContext);
+    //null-coalescing assignment operator. if the value on the left side is null it assigns the value from the right side.
+    //if the left is not null, no assignment happens
+    public IUserRepository Users
+    {
+        get
+        {
+            return _userRepository ??= new UserRepository(_dbContext);
+        }
+    }
 
-    //public IUserRepository Users
-    //{
-    //    get
-    //    {
-    //        return _userRepository ??= new UserRepository(_dbContext);
-    //    }
-    //}
+    public ICategoryRepository Categories
+    {
+        get
+        {
+            return _categoryRepository ??= new CategoryRepository(_dbContext);
+        }
+    }
 
-    //public ICategoryRepository Categories
-    //{
-    //    get
-    //    {
-    //        return _categoryRepository ??= new CategoryRepository(_dbContext);
-    //    }
-    //}
-
-    //public IProductRepository Products
-    //{
-    //    get
-    //    {
-    //        return _productRepository ??= new ProductRepository(_dbContext);
-    //    }
-    //}
+    public IProductRepository Products
+    {
+        get
+        {
+            return _productRepository ??= new ProductRepository(_dbContext);
+        }
+    }
 
     public void Dispose()
     {

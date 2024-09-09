@@ -53,6 +53,7 @@ public class ProductController : ControllerBase
             {
                 Name = product.Name,
                 Price = product.Price,
+                CategoryId = product.CategoryId
             };
 
             await _unitOfWork.Products.AddAsync(product);

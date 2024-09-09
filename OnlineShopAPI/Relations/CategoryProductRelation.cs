@@ -12,6 +12,7 @@ public class CategoryProductRelation : IEntityTypeConfiguration<CategoryModel>
         builder
             .HasMany(c => c.Products)
             .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId).IsRequired();
+            .HasForeignKey(p => p.CategoryId)
+            .IsRequired();
     }
 }
