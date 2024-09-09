@@ -85,7 +85,7 @@ public class CategoryRepository : ICategoryRepository
                 throw new ArgumentException($"Cant`t find Category by ID: {entity.Id}");
             }
 
-            category.CategoryName = entity.CategoryName; ;
+            category.CategoryName = entity.CategoryName;
         }
         catch(Exception ex)
         {
