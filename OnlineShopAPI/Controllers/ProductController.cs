@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OnlineShopAPI.DTO;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 
@@ -45,15 +46,15 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateProduct([FromBody] ProductModel product)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductCreationDTO productDTO)
     {
         try
         {
-            product = new ProductModel()
+            var product = new ProductModel
             {
-                Name = product.Name,
-                Price = product.Price,
-                CategoryId = product.CategoryId
+                Name = productDTO.ProductName,
+                Price = productDTO.UnitPrice,
+                CategoryId = productDTO.CategoryId
             };
 
             await _unitOfWork.Products.AddAsync(product);

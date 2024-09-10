@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OnlineShopAPI.DTO;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 
@@ -44,13 +45,13 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateCategory([FromBody] CategoryModel category)
+    public async Task<IActionResult> CreateCategory([FromBody] CategoriCreationDTO categoryDTO)
     {
         try
         {
-            category = new CategoryModel()
+            var category = new CategoryModel()
             {
-                CategoryName = category.CategoryName
+                CategoryName = categoryDTO.CategoryName
             };
 
             await _unitOfWork.Categories.AddAsync(category);
