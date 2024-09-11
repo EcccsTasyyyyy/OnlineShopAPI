@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineShopAPI.Data;
+using OnlineShopAPI.DTO;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
 
@@ -47,7 +48,7 @@ public class ProductRepository : IProductRepository
     {
         try
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(p => p.Category).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -59,7 +60,8 @@ public class ProductRepository : IProductRepository
     {
         try
         {
-            var result = await _context.Products.FindAsync(id);
+            var result = await _context.Products.Include(p => p.Category)
+                                                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (result == null)
             {
@@ -77,8 +79,8 @@ public class ProductRepository : IProductRepository
     {
         try
         {
-
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == entity.Id);
+            var product = await GetByIdAsync(entity.Id);
+            //var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == entity.Id);
 
             if (product == null)
             {

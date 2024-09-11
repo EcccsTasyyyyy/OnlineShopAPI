@@ -45,7 +45,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateCategory([FromBody] CategoriCreationDTO categoryDTO)
+    public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categoryDTO)
     {
         try
         {
