@@ -21,8 +21,15 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            var result = await _unitOfWork.Categories.GetAllAsync();
-            return Ok(result);
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+
+            var categoryResponseDTO = categories.Select(c => new CategoryResponseDTO
+            {
+                Id = c.Id,
+                CategoryName = c.CategoryName,
+            }).ToList();
+
+            return Ok(categoryResponseDTO);
         }
         catch (Exception ex)
         {
@@ -35,8 +42,15 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            var result = await _unitOfWork.Categories.GetByIdAsync(id);
-            return Ok(result);
+            var category = await _unitOfWork.Categories.GetByIdAsync(id);
+
+            var categoryResponseDTO = new CategoryResponseDTO
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName
+            };
+
+            return Ok(categoryResponseDTO);
         }
         catch(Exception ex)
         {
@@ -65,11 +79,15 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateCategory([FromBody] CategoryModel category)
+    public async Task<IActionResult> UpdateCategory(int id,[FromBody] CategoryDTO categoryDTO)
     {
         try
         {
-            await _unitOfWork.Categories.UpdateAsync(category);
+            var categoryUpdate = await _unitOfWork.Categories.GetByIdAsync(id);
+
+            categoryUpdate.CategoryName = categoryDTO.CategoryName;
+
+            await _unitOfWork.Categories.UpdateAsync(categoryUpdate);
             await _unitOfWork.SaveChangesAsync();
             return Ok($"Category updated successfully");
         }

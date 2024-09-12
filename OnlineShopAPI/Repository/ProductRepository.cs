@@ -80,7 +80,6 @@ public class ProductRepository : IProductRepository
         try
         {
             var product = await GetByIdAsync(entity.Id);
-            //var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == entity.Id);
 
             if (product == null)
             {

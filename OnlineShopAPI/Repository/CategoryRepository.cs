@@ -78,7 +78,7 @@ public class CategoryRepository : ICategoryRepository
     {
         try
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == entity.Id);
+            var category = await GetByIdAsync(entity.Id);
 
             if(category == null )
             {
