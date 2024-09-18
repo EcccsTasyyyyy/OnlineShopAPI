@@ -18,17 +18,20 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("products")]
-    public async Task<IActionResult> GetAllProducts()
+    //public async Task<IActionResult> GetAllProducts([FromQuery] ProductFilterDTO filterDTO, [FromQuery] SortDTO sortDTO, [FromQuery] PaginationDTO paginationDTO)
+    public async Task<IActionResult> GetAllProducts([FromQuery] PaginationDTO paginationDTO)
     {
         try
         {
             var products = await _unitOfWork.Products.GetAllAsync();
 
-            var productResponseDTO = products.Select(p => new ProductResponseDTO
+            var pagedProducts = _unitOfWork.Products.PaginateProducts(paginationDTO);
+
+            var productResponseDTO = pagedProducts.Select(p => new ProductResponseDTO
             {
                 Id = p.Id,
-                ProductName = p.Name,
-                UnitPrice = p.Price,
+                ProductName = p.ProductName,
+                UnitPrice = p.UnitPrice,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category?.CategoryName
             }).ToList();
@@ -51,8 +54,8 @@ public class ProductController : ControllerBase
             var productResponseDTO = new ProductResponseDTO
             {
                 Id = product.Id,
-                ProductName = product.Name,
-                UnitPrice = product.Price,
+                ProductName = product.ProductName,
+                UnitPrice = product.UnitPrice,
                 CategoryId = product.CategoryId,
                 CategoryName = product.Category?.CategoryName
             };
@@ -72,8 +75,8 @@ public class ProductController : ControllerBase
         {
             var product = new ProductModel
             {
-                Name = productDTO.ProductName,
-                Price = productDTO.UnitPrice,
+                ProductName = productDTO.ProductName,
+                UnitPrice = productDTO.UnitPrice,
                 CategoryId = productDTO.CategoryId
             };
 
@@ -94,8 +97,8 @@ public class ProductController : ControllerBase
         {
             var productUpdate = await _unitOfWork.Products.GetByIdAsync(id);
 
-            productUpdate.Name = productDTO.ProductName;
-            productUpdate.Price = productDTO.UnitPrice;
+            productUpdate.ProductName = productDTO.ProductName;
+            productUpdate.UnitPrice = productDTO.UnitPrice;
             productUpdate.CategoryId = productDTO.CategoryId;
 
             await _unitOfWork.Products.UpdateAsync(productUpdate);

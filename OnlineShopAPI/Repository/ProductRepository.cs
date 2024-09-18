@@ -86,13 +86,64 @@ public class ProductRepository : IProductRepository
                 throw new ArgumentException($"Can`t find Product by ID:{entity.Id}");
             }
 
-            product.Name = entity.Name;
-            product.Price = entity.Price;
+            product.ProductName = entity.ProductName;
+            product.UnitPrice = entity.UnitPrice;
             product.CategoryId = entity.CategoryId; // პროდუქტისთვის კატეგორიის შეცვლა ასე მოხდება ?
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new ArgumentException($"Can`t update database", ex.Message);
         }
+    }
+
+    public async Task<IEnumerable<ProductModel>> FilteredProducts(ProductFilterDTO filterDTO)
+    {
+        var query = _context.Products.Include(p => p.Category).AsQueryable();
+
+        if (!string.IsNullOrEmpty(filterDTO.ProductName))
+        {
+            query = query.Where(p => p.ProductName.Contains(filterDTO.ProductName));
+        }
+
+        if (filterDTO.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.UnitPrice >= filterDTO.MinPrice.Value);
+        }
+
+        if (filterDTO.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.UnitPrice <= filterDTO.MaxPrice.Value);
+        }
+
+        if (filterDTO.CategoryId.HasValue)
+        {
+            query = query.Where(p => p.CategoryId == filterDTO.CategoryId.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public IEnumerable<ProductModel> SortProducts(SortDTO sortDTO, IEnumerable<ProductModel> products)
+    {
+        var sortedProducts = products.AsQueryable();
+
+        if (!string.IsNullOrEmpty(sortDTO.SortBy))
+        {
+            sortedProducts = sortDTO.SortDirection?.ToLower() == "desc"
+                ? sortedProducts.OrderByDescending(p => EF.Property<object>(p, sortDTO.SortBy))
+                : sortedProducts.OrderBy(p => EF.Property<object>(p, sortDTO.SortBy));
+        }
+
+        return sortedProducts.ToList();
+    }
+
+    public IEnumerable<ProductModel> PaginateProducts(PaginationDTO paginationDTO)
+    {
+        var pagedProducts = _context.Products
+            .Skip((paginationDTO.PageNumber - 1) * paginationDTO.PageSize)
+            .Take(paginationDTO.PageSize)
+            .ToList();
+
+        return pagedProducts;
     }
 }

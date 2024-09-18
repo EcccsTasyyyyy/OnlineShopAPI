@@ -11,8 +11,8 @@ using OnlineShopAPI.Data;
 namespace OnlineShopAPI.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240909165417_ProductAdd")]
-    partial class ProductAdd
+    [Migration("20240918202233_AddProductColumns")]
+    partial class AddProductColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,7 @@ namespace OnlineShopAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CategoryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -52,6 +53,7 @@ namespace OnlineShopAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ProductName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")

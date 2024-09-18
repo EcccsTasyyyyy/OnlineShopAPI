@@ -11,8 +11,8 @@ using OnlineShopAPI.Data;
 namespace OnlineShopAPI.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240909165417_ProductAdd")]
-    partial class ProductAdd
+    [Migration("20240918194618_ChangedNameingInProdictModel")]
+    partial class ChangedNameingInProdictModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
