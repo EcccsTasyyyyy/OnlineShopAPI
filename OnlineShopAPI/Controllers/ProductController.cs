@@ -18,14 +18,15 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("products")]
-    //public async Task<IActionResult> GetAllProducts([FromQuery] ProductFilterDTO filterDTO, [FromQuery] SortDTO sortDTO, [FromQuery] PaginationDTO paginationDTO)
-    public async Task<IActionResult> GetAllProducts([FromQuery] PaginationDTO paginationDTO)
+    public async Task<IActionResult> GetAllProducts([FromQuery] PaginationDTO paginationDTO, [FromQuery] SortingDTO sortingDTO)
     {
         try
         {
             var products = await _unitOfWork.Products.GetAllAsync();
 
-            var pagedProducts = _unitOfWork.Products.PaginateProducts(paginationDTO);
+            var sortedProducts = _unitOfWork.Products.SortProducts(sortingDTO, products);
+
+            var pagedProducts = _unitOfWork.Products.PaginateProducts(paginationDTO,sortedProducts);
 
             var productResponseDTO = pagedProducts.Select(p => new ProductResponseDTO
             {

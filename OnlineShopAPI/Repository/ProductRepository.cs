@@ -3,6 +3,7 @@ using OnlineShopAPI.Data;
 using OnlineShopAPI.DTO;
 using OnlineShopAPI.IRepository;
 using OnlineShopAPI.Models;
+using System.Reflection;
 
 namespace OnlineShopAPI.Repository;
 
@@ -88,7 +89,7 @@ public class ProductRepository : IProductRepository
 
             product.ProductName = entity.ProductName;
             product.UnitPrice = entity.UnitPrice;
-            product.CategoryId = entity.CategoryId; // პროდუქტისთვის კატეგორიის შეცვლა ასე მოხდება ?
+            product.CategoryId = entity.CategoryId;
         }
         catch (Exception ex)
         {
@@ -123,27 +124,30 @@ public class ProductRepository : IProductRepository
         return await query.ToListAsync();
     }
 
-    public IEnumerable<ProductModel> SortProducts(SortDTO sortDTO, IEnumerable<ProductModel> products)
+    public IEnumerable<ProductModel> SortProducts(SortingDTO sortDTO, IEnumerable<ProductModel> products)
     {
-        var sortedProducts = products.AsQueryable();
-
-        if (!string.IsNullOrEmpty(sortDTO.SortBy))
+        if(string.IsNullOrEmpty(sortDTO.SortBy))
         {
-            sortedProducts = sortDTO.SortDirection?.ToLower() == "desc"
-                ? sortedProducts.OrderByDescending(p => EF.Property<object>(p, sortDTO.SortBy))
-                : sortedProducts.OrderBy(p => EF.Property<object>(p, sortDTO.SortBy));
+            return products;
         }
 
-        return sortedProducts.ToList();
+        var productInfo = typeof(ProductModel).GetProperty(sortDTO.SortBy);
+        if(productInfo == null)
+        {
+            throw new ArgumentException($"Invalid sort field: {sortDTO.SortBy}");
+        }
+
+        return sortDTO.IsAscending
+            ? products.OrderBy(p => productInfo.GetValue(p, null)).ToList()
+            : products.OrderByDescending(p => productInfo.GetValue(p, null)).ToList();
     }
 
-    public IEnumerable<ProductModel> PaginateProducts(PaginationDTO paginationDTO)
+    public IEnumerable<ProductModel> PaginateProducts(PaginationDTO paginationDTO, IEnumerable<ProductModel> products)
     {
-        var pagedProducts = _context.Products
-            .Skip((paginationDTO.PageNumber - 1) * paginationDTO.PageSize)
+        products = products.Skip((paginationDTO.PageNumber - 1) * paginationDTO.PageSize)
             .Take(paginationDTO.PageSize)
             .ToList();
 
-        return pagedProducts;
+        return products;
     }
 }
